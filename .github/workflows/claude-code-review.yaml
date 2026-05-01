@@ -1,0 +1,18 @@
+name: Claude Code Review
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  issue_comment:
+    types: [created]
+
+jobs:
+  auto-review:
+    if: >-
+      github.event_name == 'pull_request' ||
+      (github.event.issue.pull_request &&
+       (startsWith(github.event.comment.body, '@claude review') ||
+        startsWith(github.event.comment.body, '@claude please review')))
+    uses: posit-hosted/gha/.github/workflows/claude-review.yaml@v3
+    secrets: inherit
+    with:
+      pr_number: ${{ github.event.issue.number || github.event.pull_request.number }}
